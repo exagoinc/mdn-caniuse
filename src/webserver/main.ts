@@ -1,12 +1,11 @@
-import * as mdnData from "mdn-browser-compat-data";
-import express from "express";
-import dotenv from "dotenv";
-import compression from "compression";
-import bodyParser from "body-parser";
-import expressHandlebars from "express-handlebars";
+const mdnData = require("mdn-browser-compat-data");
+import * as express from "express";
+import * as dotenv from "dotenv";
+import * as compression from "compression";
+import * as bodyParser from "body-parser";
+import * as expressHandlebars from "express-handlebars";
 
 const handlebars = expressHandlebars.create();
-
 
 // Let the process crash on unhandled promises
 process.on('unhandledRejection', err => { throw err; });
@@ -24,13 +23,17 @@ app.use(bodyParser.text());
 // The route handler for when the user requests '/'
 // Run handlebars on index.handlebars and respond with the output HTML
 app.get("/", async (req, res, next) => {
-	const html = await handlebars.render("index.handlebars", {
-		exago_jsapi_url: process.env.EXAGO_WEB_URL + "WrScriptResource.axd?s=ExagoApi",
-		exago_web_url: process.env.EXAGO_WEB_URL
+	const html = await handlebars.render("src/webclient/index.handlebars", {
+		mdn_data: JSON.stringify(mdnData.javascript),
 	});
-
 	res.send(html);
 });
+
+app.get("/mdn-data", async (req, res, next) => {
+	res.json(mdnData);
+});
+
+app.use(express.static("src/webclient"));
 
 // Start the webserver
 app.listen(process.env.PORT || 8080, () => {
