@@ -1,10 +1,18 @@
-class App
+class App extends HTMLElement
 {
 	private mdnData: any;
 	
-	constructor() { }
+	constructor() {
+		super();
 
-	private async Init()
+		this.attachShadow({mode: "open"});
+
+		const input = document.createElement("input");
+		input.type = "text";
+		this.shadowRoot.appendChild(input);
+	}
+
+	public async init()
 	{
 		const response = await fetch("/mdn-data", {
 
@@ -28,6 +36,8 @@ class App
 		console.log(this.mdnData)
 	}
 }
+customElements.define("x-app", App);
 
-const app = new App();
-app.Init()
+const app = document.getElementById("app") as App;
+app.init();
+
