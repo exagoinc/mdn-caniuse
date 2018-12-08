@@ -14,13 +14,30 @@ class SearchInput extends HTMLElement
 
 		const style = document.createElement("style");
 		style.textContent = `
+			:host {
+				margin-top: 20px;
+				display: block;
+			}	
 			input[type='search'] {
 				display: block;
 				margin: auto;
 				outline: none;
+				border: none;
+				box-shadow: 0 0 2px 1px rgba(0,0,0,.2);
+				box-sizing: border-box;
+				height: 40px;
+				width: 90%;
+				max-width: 400px;
+				font-size: 20px;
+				padding: 0 14px;
+				border-radius: 5px;
+				cursor: pointer;
+				transition: all .2s ease-out;
 			}
 			input[type='search']:focus {
-				border: 1px solid black;
+				cursor: text;
+				box-shadow: 0 2px 7px 2px rgba(0,0,0,.2);
+				transform: translateY(-2px);
 			}
 		`;
 		this.shadowRoot.appendChild(style);
