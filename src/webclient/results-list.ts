@@ -17,6 +17,10 @@ class ResultsList extends HTMLElement
 				max-width: 960px;
 				margin: auto;
 			}
+			.truncated-message {
+				color: gray;
+				font-style: italic;
+			}
 		`;
 		this.shadowRoot.appendChild(style);
 
@@ -27,12 +31,27 @@ class ResultsList extends HTMLElement
 	public setResults(results: SearchResult[]): void
 	{
 		this.resultsList.innerHTML = "";
+
+		let truncated = false;
+		if (results.length > 20)
+		{
+			results.length = 20;
+			truncated = true;
+		}
 		
 		for (let result of results)
 		{
 			const resultView = document.createElement("result-view") as ResultView;
 			this.resultsList.appendChild(resultView);
 			resultView.value = result;
+		}
+
+		if (truncated)
+		{
+			const truncatedMessage = document.createElement("p");
+			truncatedMessage.className = "truncated-message";
+			truncatedMessage.textContent = "Truncated results to 20 items";
+			this.resultsList.appendChild(truncatedMessage);
 		}
 	}
 }
