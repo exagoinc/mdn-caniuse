@@ -1,22 +1,40 @@
 class App extends HTMLElement
 {
-	private mdnData: any;
+	private resultsProvider: ResultsProvider;
+	private searchBox: SearchInput;
 	
-	constructor() {
+	constructor()
+	{
 		super();
 
 		this.attachShadow({mode: "open"});
 
-		const input = document.createElement("input");
-		input.type = "text";
-		this.shadowRoot.appendChild(input);
+		this.searchBox = document.createElement("search-input") as SearchInput;
+		this.shadowRoot.appendChild(this.searchBox);
+		const resultsList = document.createElement("results-list") as ResultsList;
+		this.shadowRoot.appendChild(resultsList);
+
+		const style = document.createElement("style");
+		style.textContent = `
+			:host {
+				font-family: Roboto, sans-serif;
+			}
+		`;
+		this.shadowRoot.appendChild(style);
+
+		this.searchBox.addEventListener("change", (evt: CustomEvent) => {
+			resultsList.setResults(this.resultsProvider.search(evt.detail));
+		});
+	}
+
+	public connectedCallback()
+	{
+		this.searchBox.focus();
 	}
 
 	public async init()
 	{
-		const response = await fetch("/mdn-data", {
-
-		});
+		const response = await fetch("/mdn-data", {});
 
 		if (!response.ok)
 		{
@@ -24,16 +42,18 @@ class App extends HTMLElement
 			return;
 		}
 
+		let mdnData: any;
 		try
 		{
-			this.mdnData = await response.json();
+			mdnData = await response.json();
 		}
 		catch
 		{
 			console.error(`Error fetching mdn data: ${await response.text()}`);
 		}
 
-		console.log(this.mdnData)
+		console.log(mdnData)
+		this.resultsProvider = new ResultsProvider(mdnData);
 	}
 }
 customElements.define("x-app", App);
