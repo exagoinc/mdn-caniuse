@@ -1,5 +1,6 @@
 class App extends HTMLElement
 {
+	public static browsers: Browsers;
 	private resultsProvider: ResultsProvider;
 	private searchBox: SearchInput;
 	
@@ -54,6 +55,7 @@ class App extends HTMLElement
 
 		console.log(mdnData)
 		this.resultsProvider = new ResultsProvider(mdnData);
+		App.browsers = mdnData.browsers;
 	}
 }
 customElements.define("x-app", App);

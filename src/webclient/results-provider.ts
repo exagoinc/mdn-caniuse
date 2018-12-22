@@ -1,6 +1,8 @@
 class ResultsProvider
 {
-	constructor(private compatData: any) { }
+	constructor(private compatData: CompatData)
+	{
+	}
 
 	public search(searchText: string): SearchResult[]
 	{
@@ -12,22 +14,26 @@ class ResultsProvider
 		const results = [] as SearchResult[];
 		for (let featureName in apiData)
 		{
-			const feature = apiData[featureName].__compat;
+			const feature = (apiData[featureName] as Identifier).__compat;
 			
 			if (featureName.toLowerCase().includes(searchText))
 			{
 				const result: SearchResult = {
-					name: featureName
+					name: featureName,
+					support: [],
 				};
 				results.push(result);
 
-				for (let browser of ["chrome", "chrome_android", "edge", "firefox", "safari", "safari_ios", "ie"])
+				for (let browser in this.compatData.browsers)
 				{
 					let support = feature.support[browser];
 
 					// No compatability data for this browser
 					if (typeof support === "undefined")
+					{
+						result.support.push({ browser: browser as BrowserNames, supported: null });
 						continue;
+					}
 
 					if (typeof support.length === "undefined")
 						support = [support];
@@ -36,7 +42,11 @@ class ResultsProvider
 
 					if (support.version_added != null)
 					{
-						result[browser] = true;
+						result.support.push({ browser: browser as BrowserNames, supported: true });
+					}
+					else
+					{
+						result.support.push({ browser: browser as BrowserNames, supported: false });
 					}
 				}
 			}
@@ -49,11 +59,11 @@ class ResultsProvider
 interface SearchResult
 {
 	name: string;
-	chrome?: boolean;
-	chrome_android?: boolean;
-	edge?: boolean;
-	firefox?: boolean;
-	ie11?: boolean;
-	safari?: boolean;
-	safari_ios?: boolean;
+	support: SearchResultSupport[];
+}
+
+interface SearchResultSupport
+{
+	browser: BrowserNames;
+	supported: boolean;
 }

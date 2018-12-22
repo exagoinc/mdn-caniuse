@@ -17,10 +17,9 @@ class ResultView extends HTMLElement
 			}
 			.grid {
 				display: grid;
-				grid-template-columns: repeat(7, 50px);
 			}
 			.title-row {
-				grid-column: 1 / span 7;
+				grid-column: 1 / -1;
 			}
 		`;
 		this.shadowRoot.appendChild(style);
@@ -34,19 +33,21 @@ class ResultView extends HTMLElement
 	{
 		this.result = result;
 
+		this.resultBox.style.gridTemplateColumns = `repeat(${Object.keys(this.result.support).length}, 50px)`;
+
 		const titleRow = document.createElement("div");
 		titleRow.className = "title-row";
 		titleRow.textContent = this.result.name;
 		this.resultBox.appendChild(titleRow);
 
-		for (let browser of ["chrome", "chrome_android", "edge", "firefox", "safari", "safari_ios", "ie"])
+		for (let browser in App.browsers)
 		{
 			const browserIcon = document.createElement("img");
 			browserIcon.src = `images/${browser}.svg`;
 			this.resultBox.appendChild(browserIcon);
 		}
 
-		for (let browser of ["chrome", "chrome_android", "edge", "firefox", "safari", "safari_ios", "ie"])
+		for (let browser in App.browsers)
 		{
 			const browserSupport = document.createElement("div");
 			browserSupport.textContent = this.result[browser] ? "yes" : "no";
