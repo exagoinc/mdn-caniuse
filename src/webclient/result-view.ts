@@ -33,7 +33,7 @@ class ResultView extends HTMLElement
 	public set value(result: SearchResult)
 	{
 		this.result = result;
-		this.resultBox.style.gridTemplateColumns = `repeat(${Object.keys(this.result.support).length}, 50px)`;
+		this.resultBox.style.gridTemplateColumns = `repeat(${Object.keys(App.browsers).length}, 50px)`;
 
 		const titleRow = document.createElement("div");
 		titleRow.className = "title-row";
@@ -50,7 +50,34 @@ class ResultView extends HTMLElement
 		for (let browser in App.browsers)
 		{
 			const browserSupport = document.createElement("div");
-			browserSupport.textContent = this.result.support.some(e => e.browser === browser && e.supported) ? "yes" : "no";
+			const support = this.result.compatData.__compat.support;
+
+			if (!support[browser])
+			{
+				browserSupport.textContent = "no";
+			}
+			else
+			{
+				const singleSupport = (Array.isArray(support[browser]) ? support[browser][0] : support[browser]) as SimpleSupportStatement;
+				
+				if (singleSupport.version_added == null)
+				{
+					browserSupport.textContent = "?";
+				}
+				else if (typeof singleSupport.version_added === "string")
+				{
+					browserSupport.textContent = singleSupport.version_added;
+				}
+				else if (typeof singleSupport.version_added === "boolean")
+				{
+					browserSupport.textContent = "yes";
+				}
+				else
+				{
+					throw "Unhandled value for version_added";
+				}
+			}
+
 			this.resultBox.appendChild(browserSupport);
 		}
 	}

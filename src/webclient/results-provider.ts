@@ -8,48 +8,31 @@ class ResultsProvider
 	{
 		if (searchText === "")
 			return [];
+
+		return this.getResults(searchText, null, this.compatData);
+	}
+
+	private getResults(searchText: string, nodeName: string, data: any): SearchResult[]
+	{
+		if (typeof data !== "object")
+			return [];
 		
-		const apiData = this.compatData.api;
+		let results = [] as SearchResult[];
 
-		const results = [] as SearchResult[];
-		for (let featureName in apiData)
+		if ("__compat" in data)
 		{
-			const feature = (apiData[featureName] as Identifier).__compat;
-			
-			if (featureName.toLowerCase().includes(searchText))
+			if (nodeName.toLowerCase().includes(searchText))
 			{
-				const result: SearchResult = {
-					name: featureName,
-					support: [],
-				};
-				results.push(result);
-
-				for (let browser in this.compatData.browsers)
-				{
-					let support = feature.support[browser];
-
-					// No compatability data for this browser
-					if (typeof support === "undefined")
-					{
-						result.support.push({ browser: browser as BrowserNames, supported: null });
-						continue;
-					}
-
-					if (typeof support.length === "undefined")
-						support = [support];
-
-					support = support[0];
-
-					if (support.version_added != null)
-					{
-						result.support.push({ browser: browser as BrowserNames, supported: true });
-					}
-					else
-					{
-						result.support.push({ browser: browser as BrowserNames, supported: false });
-					}
-				}
+				return [{ name: nodeName, compatData: data }];
 			}
+		}
+		
+		for (let key in data)
+		{
+			if (key === "__compat")
+				continue;
+			
+			results = results.concat(this.getResults(searchText, key, data[key]));
 		}
 
 		return results;
@@ -59,11 +42,5 @@ class ResultsProvider
 interface SearchResult
 {
 	name: string;
-	support: SearchResultSupport[];
-}
-
-interface SearchResultSupport
-{
-	browser: BrowserNames;
-	supported: boolean;
+	compatData: Identifier;
 }
