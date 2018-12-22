@@ -13,13 +13,14 @@ class ResultView extends HTMLElement
 		style.textContent = `
 			:host {
 				display: block;
-				width: 300px;
 			}
 			.grid {
 				display: grid;
+				justify-items: center;
 			}
 			.title-row {
 				grid-column: 1 / -1;
+				text-align: center;
 			}
 		`;
 		this.shadowRoot.appendChild(style);
@@ -32,7 +33,6 @@ class ResultView extends HTMLElement
 	public set value(result: SearchResult)
 	{
 		this.result = result;
-
 		this.resultBox.style.gridTemplateColumns = `repeat(${Object.keys(this.result.support).length}, 50px)`;
 
 		const titleRow = document.createElement("div");
@@ -50,7 +50,7 @@ class ResultView extends HTMLElement
 		for (let browser in App.browsers)
 		{
 			const browserSupport = document.createElement("div");
-			browserSupport.textContent = this.result[browser] ? "yes" : "no";
+			browserSupport.textContent = this.result.support.some(e => e.browser === browser && e.supported) ? "yes" : "no";
 			this.resultBox.appendChild(browserSupport);
 		}
 	}

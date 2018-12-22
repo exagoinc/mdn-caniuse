@@ -11,8 +11,7 @@ class ResultsList extends HTMLElement
 		const style = document.createElement("style");
 		style.textContent = `
 			:host {
-				display: block;
-				height: 200px;
+				display: flex;
 				width: 100%;
 				max-width: 960px;
 				margin: auto;
