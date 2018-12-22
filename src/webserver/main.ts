@@ -19,12 +19,11 @@ app.use(bodyParser.json({limit: '50mb'}));
 app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
 app.use(bodyParser.text());
 
-
 // The route handler for when the user requests '/'
 // Run handlebars on index.handlebars and respond with the output HTML
 app.get("/", async (req, res, next) => {
 	const html = await handlebars.render("src/webclient/index.handlebars", {
-		mdn_data: JSON.stringify(mdnData.javascript),
+		
 	});
 	res.send(html);
 });
