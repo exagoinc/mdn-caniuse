@@ -20,7 +20,6 @@ class ResultView extends HTMLElement
 			}
 			.title-row {
 				grid-column: 1 / -1;
-				text-align: center;
 			}
 		`;
 		this.shadowRoot.appendChild(style);
@@ -35,9 +34,11 @@ class ResultView extends HTMLElement
 		this.result = result;
 		this.resultBox.style.gridTemplateColumns = `repeat(${Object.keys(App.browsers).length}, 50px)`;
 
-		const titleRow = document.createElement("div");
+		const titleRow = document.createElement("a");
 		titleRow.className = "title-row";
 		titleRow.textContent = this.result.name;
+		titleRow.href = this.result.compatData.__compat.mdn_url;
+		titleRow.target = "_blank";
 		this.resultBox.appendChild(titleRow);
 
 		for (let browser in App.browsers)

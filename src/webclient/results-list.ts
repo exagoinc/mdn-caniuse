@@ -37,9 +37,12 @@ class ResultsList extends HTMLElement
 			results.length = 20;
 			truncated = true;
 		}
-		
+
 		for (let result of results)
 		{
+			if (!result.compatData.__compat.mdn_url)
+				continue;
+			
 			const resultView = document.createElement("result-view") as ResultView;
 			this.resultsList.appendChild(resultView);
 			resultView.value = result;

@@ -9,7 +9,11 @@ class ResultsProvider
 		if (searchText === "")
 			return [];
 
-		return this.getResults(searchText, null, this.compatData);
+		const results = this.getResults(searchText, null, this.compatData);
+
+		return results.sort((a, b) => {
+			return a.name.length < b.name.length ? -1 : a.name.length > b.name.length ? 1 : 0;
+		});
 	}
 
 	private getResults(searchText: string, nodeName: string, data: any): SearchResult[]
